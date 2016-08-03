@@ -47,9 +47,8 @@ function gifCommand(text) {
   tokens = _.map(tokens, function(t) {
     return t.toLowerCase();
   });
-
   console.log('gif requested: ' + tokens.toString());
-  tokens = _.without(tokens, '/gif');
+  tokens = _.without(tokens, 'gif');
   console.log('tokens: ' + tokens.toString());
 
   giphy.search(escape(tokens.join('+')), 20, 0, function(err, data) {
