@@ -34,8 +34,8 @@ bot.on('botMessage', function(bot, message) {
 
     tokens = _.map(tokens, function(t) { return t.toLowerCase(); });
 
-    if (tokens.indexOf('giphybot') >= 0 || tokens.indexOf('g') >= 0) {
-      tokens = _.without(tokens, 'giphybot', 'g');
+    if (tokens[0] === '/gif') {
+      tokens = _.without(tokens, 'gif');
       console.log("searching for " + tokens);
       giphy.search(escape(tokens.join('+')), 20, 0, function(err, data) {
         if (err) console.error(err);
