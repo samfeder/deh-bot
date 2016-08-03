@@ -10,7 +10,7 @@ var request = require('request');
 var tokenizer = new natural.WordTokenizer();
 
 var config =  { token:GROUPMETOKEN,
-                name: "giphybot",
+                name: "deh-bot",
                 group: GROUP,
                 url: URL
               };
@@ -23,35 +23,49 @@ if (AVATAR) {
 var giphy = require('giphy-wrapper')(GIPHYTOKEN);
 var bot = require('fancy-groupme-bot')(config);
 
+var commands = {'gif' : gifCommand};
+
 bot.on('botRegistered', function() {
   console.log("online");
 });
 
 bot.on('botMessage', function(bot, message) {
-  console.log('incoming');
-  if (message.name != 'giphybot') {
-    console.log('message is ' + JSON.stringify(message));
-    var tokens = tokenizer.tokenize(message.text);
-    console.log('tokens is ' + tokens.toString());
-    tokens = _.map(tokens, function(t) { return t.toLowerCase(); });
+  console.log('Message recieved');
+  var commandTerm = findCommandTerm(message.text);
 
-    if (tokens[0] === '/gif') {
-      console.log('gif requested');
-      tokens = _.without(tokens, '/gif');
-      console.log("searching for " + tokens);
-      giphy.search(escape(tokens.join('+')), 20, 0, function(err, data) {
-        if (err) console.error(err);
-        console.log("giphy returned " + util.inspect(data));
-        if (data.data.length) {
-          data = _.shuffle(data.data);
-          var id = data[0].id;
-          var imageUrl = "http://media3.giphy.com/media/" + id + "/giphy.gif";
-          console.log("sending a message " + imageUrl);
-          bot.message(imageUrl);
-        }
-      });
-    }
+  if (commandTerm) {
+    commands[commandTerm](message.text);
   }
 });
+
+function gifCommand(text) {
+  var tokens = tokenizer.tokenize(text);
+
+  tokens = _.map(tokens, function(t) {
+    return t.toLowerCase();
+  });
+
+  console.log('gif requested: ' + tokens.toString());
+  tokens = _.without(tokens, '/gif');
+
+  giphy.search(escape(tokens.join('+')), 20, 0, function(err, data) {
+    if (err) console.error(err);
+    console.log("giphy returned " + util.inspect(data));
+    if (data.data.length) {
+      data = _.shuffle(data.data);
+      var id = data[0].id;
+      var imageUrl = "http://media3.giphy.com/media/" + id + "/giphy.gif";
+      console.log("sending a message " + imageUrl);
+      bot.message(imageUrl);
+    }
+  });
+}
+
+function findCommandTerm(text) {
+  var key = text.split(' ')[0];
+
+  if (key[0] != '/') return undefined;
+  return commands[key.substring(1)];
+}
 
 bot.serve(process.env['PORT'] || 3000);
