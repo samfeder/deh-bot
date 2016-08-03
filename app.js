@@ -1,7 +1,7 @@
-var GROUPMETOKEN = process.env['GROUPMETOKEN'];
-var GIPHYTOKEN = process.env['GIPHYTOKEN'];
-var GROUP = process.env['GROUP'];
-var URL = process.env['URL'];
+var GROUPMETOKEN = process.env['GROUPMETOKEN'] || '1a427b103b54013494fe1fc52abab46f';
+var GIPHYTOKEN = process.env['GIPHYTOKEN'] || 'dc6zaTOxFJmzC';
+var GROUP = process.env['GROUP'] || '23542536';
+var URL = process.env['URL'] || 'http://deh-bot.herokuapp.com';
 var natural = require('natural');
 var _ = require('underscore');
 var util = require('util');
@@ -10,7 +10,7 @@ var request = require('request');
 var tokenizer = new natural.WordTokenizer();
 
 var config =  { token:GROUPMETOKEN,
-                name: "deh-bot",
+                name: "DEHbot",
                 group: GROUP,
                 url: URL
               };
@@ -23,7 +23,9 @@ if (AVATAR) {
 var giphy = require('giphy-wrapper')(GIPHYTOKEN);
 var bot = require('fancy-groupme-bot')(config);
 
-var commands = {'gif' : gifCommand};
+var commands = {
+  'gif': gifCommand
+};
 
 bot.on('botRegistered', function() {
   console.log("online");
@@ -31,10 +33,11 @@ bot.on('botRegistered', function() {
 
 bot.on('botMessage', function(bot, message) {
   console.log('Message recieved');
-  var commandTerm = findCommandTerm(message.text);
-
-  if (commandTerm) {
-    commands[commandTerm](message.text);
+  var commandTerm = message.text.split(' ')[0];
+  var command = findCommand(commandTerm);
+  if (_.isFunction(command) && message.name != config.name) {
+    console.log('command found:' + commandTerm);
+    command(message.text)
   }
 });
 
@@ -61,11 +64,9 @@ function gifCommand(text) {
   });
 }
 
-function findCommandTerm(text) {
-  var key = text.split(' ')[0];
-
-  if (key[0] != '/') return undefined;
-  return commands[key.substring(1)];
+function findCommand(commandTerm) {
+  if (commandTerm[0] != '/') return undefined;
+  return commands[commandTerm.substring(1)];
 }
 
 bot.serve(process.env['PORT'] || 3000);
