@@ -7,9 +7,9 @@ const _ = require('underscore');
 const util = require('util');
 const request = require('request');
 
-var tokenizer = new natural.WordTokenizer();
+let tokenizer = new natural.WordTokenizer();
 
-var config =  { token:GROUPMETOKEN,
+let config =  { token:GROUPMETOKEN,
                 name: "giphybot",
                 group: GROUP,
                 url: URL
