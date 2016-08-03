@@ -30,12 +30,14 @@ bot.on('botRegistered', function() {
 bot.on('botMessage', function(bot, message) {
   console.log('incoming');
   if (message.name != 'giphybot') {
+    console.log('message is ' + JSON.stringify(message));
     var tokens = tokenizer.tokenize(message.text);
-
+    console.log('tokens is ' + tokens.toString());
     tokens = _.map(tokens, function(t) { return t.toLowerCase(); });
 
     if (tokens[0] === '/gif') {
-      tokens = _.without(tokens, 'gif');
+      console.log('gif requested');
+      tokens = _.without(tokens, '/gif');
       console.log("searching for " + tokens);
       giphy.search(escape(tokens.join('+')), 20, 0, function(err, data) {
         if (err) console.error(err);
