@@ -1,21 +1,21 @@
-const GROUPMETOKEN = process.env['GROUPMETOKEN'];
-const GIPHYTOKEN = process.env['GIPHYTOKEN'];
-const GROUP = process.env['GROUP'];
-const URL = process.env['URL'];
-const natural = require('natural');
-const _ = require('underscore');
-const util = require('util');
-const request = require('request');
+var GROUPMETOKEN = process.env['GROUPMETOKEN'];
+var GIPHYTOKEN = process.env['GIPHYTOKEN'];
+var GROUP = process.env['GROUP'];
+var URL = process.env['URL'];
+var natural = require('natural');
+var _ = require('underscore');
+var util = require('util');
+var request = require('request');
 
-let tokenizer = new natural.WordTokenizer();
+var tokenizer = new natural.WordTokenizer();
 
-let config =  { token:GROUPMETOKEN,
+var config =  { token:GROUPMETOKEN,
                 name: "giphybot",
                 group: GROUP,
                 url: URL
               };
 
-const AVATAR = process.env['AVATAR'];
+var AVATAR = process.env['AVATAR'];
 if (AVATAR) {
   config.avatar_url = AVATAR;
 }
