@@ -6,6 +6,7 @@ var natural = require('natural');
 var _ = require('underscore');
 var util = require('util');
 var request = require('request');
+var drizzy = require('./drake/drake-lyrics');
 
 var tokenizer = new natural.WordTokenizer();
 
@@ -24,7 +25,8 @@ var giphy = require('giphy-wrapper')(GIPHYTOKEN);
 var bot = require('fancy-groupme-bot')(config);
 
 var commands = {
-  'gif': gifCommand
+  'gif': gifCommand,
+  'drake': drakeCommand
 };
 
 bot.on('botRegistered', function() {
@@ -35,13 +37,22 @@ bot.on('botMessage', function(bot, message) {
   console.log('Message recieved');
   var commandTerm = message.text.split(' ')[0];
   var command = findCommand(commandTerm);
+  
   if (_.isFunction(command) && message.name != config.name) {
     console.log('command found:' + commandTerm);
-    command(message.text)
+    command(message)
   }
 });
 
-function gifCommand(text) {
+function drakeCommand() {
+  var lyric = _.shuffle(drizzy.lyrics)[0];
+  var image = _.shuffle(drizzy.images)[0];
+  bot.message(image);
+  bot.message(lyric);
+}
+
+function gifCommand(message) {
+  var text = message.text;
   var tokens = tokenizer.tokenize(text);
 
   tokens = _.map(tokens, function(t) {
